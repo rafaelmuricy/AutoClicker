@@ -74,10 +74,11 @@ public partial class ExternalMethods
             {
                 Form1 form = (Form1)Application.OpenForms[0]!;
 
+                form.CaptureCallback(hookStruct.pt, (int)processId);
 
                 //form.Controls["label1"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
-                form.Controls["label2"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
-                form.position((int)processId, hookStruct);
+                //form.Controls["label2"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
+                //form.position((int)processId, hookStruct);
             }));
         }
 
@@ -86,7 +87,7 @@ public partial class ExternalMethods
 
     private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
     private const uint MOUSEEVENTF_LEFTUP = 0x0004;
-    public async static void MoveMouseClickAndReturn()
+    public async static void MoveMouseClickAndReturn(POINT point)
     {
         Debug.WriteLine("Entrei");
         //mouse original position
@@ -96,7 +97,7 @@ public partial class ExternalMethods
 
         // Move para o destino
         Debug.WriteLine($"[{DateTime.Now}] setei");
-        SetCursorPos(Form1.MouseX, Form1.MouseY);
+        SetCursorPos(point.x, point.y);
         // Clique
         Debug.WriteLine($"[{DateTime.Now}] clickei");
 

@@ -1,43 +1,67 @@
 using System.Diagnostics;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace AutoClicker;
 
 public partial class Form1 : Form
 {
-    public static int MouseX = 0;
-    public static int MouseY = 0;
-    public static DateTime UltimoClick = DateTime.MinValue;
+    static List<Click> CLICKS = new();
 
     public Form1()
     {
         InitializeComponent();
+        worker();
     }
 
-    public async void contadorGeral()
+    bool isRunning = false;
+    void worker()
     {
-        while (iniciado)
+        Task.Run(async () =>
         {
-            label3.Text = DateTime.Now.ToString();
-            label4.Text = $"Tempo até o próximo click: {((DateTime.Now - UltimoClick).Seconds - clickDelay) * -1} segundos";
-            await Task.Delay(50);
-        }
+            while (true)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(300));
+                if (isRunning)
+                {
+                    foreach (var item in CLICKS)
+                    {
+                        if ((DateTime.Now - item.lastClick).Seconds >= item.delay)
+                        {
+                            ExternalMethods.MoveMouseClickAndReturn(item.point);
+                            item.lastClick = DateTime.Now;
+                        }
+                    }
+                }
+                this.BeginInvoke(() =>
+                {
+                    updatePanel();
+
+                });
+            }
+        });
     }
 
-    public void position(int pid, ExternalMethods.MSLLHOOKSTRUCT mousePosition)
+    void updatePanel()
     {
-        MouseY = mousePosition.pt.y;
-        MouseX = mousePosition.pt.x;
+        if (isRunning)
+        {
+            foreach (var item in CLICKS)
+            {
+                panel1.Controls[$"lblLeft_{item.ID}"]?.Text = $"Time until click: {item.delay - (DateTime.Now - item.lastClick).Seconds}s";
 
+                if (panel1.Controls[$"lblDelay_{item.ID}"]?.Text != $"Delay: {item.delay}")
+                {
+                    panel1.Controls[$"lblDelay_{item.ID}"]?.Text = $"Delay: {item.delay}";
+                }
+            }
+        }
+
+        label3.Text = DateTime.Now.ToString("HH:mm:ss");
+    }
+
+    public void positionWindow(int pid, ExternalMethods.POINT mousePosition)
+    {
         var process = Process.GetProcessById(pid);
         var processWindowTitle = process.MainWindowTitle;
-
-        var labelText = $@"Título: {process.MainWindowTitle}
-Processo: {process.ProcessName}
-PID: {process.Id}";
-
 
         IntPtr handle = process.MainWindowHandle;
 
@@ -51,54 +75,184 @@ PID: {process.Id}";
         }
         else
         {
-            Debug.WriteLine("Não foi possível obter a posição.");
+            Debug.WriteLine("Error.");
         }
-
-        labelText += $"X: {mousePosition.pt.x}; Y: {mousePosition.pt.y}";
-        label2.Text = labelText;
 
         this.Location = new Point(rect.Right, rect.Top);
         panel1.Visible = true;
     }
 
 
-    private void button2_Click(object sender, EventArgs e)
+    private void btCapture_Click(object sender, EventArgs e)
     {
-        label2.Text = "Clique no ponto exato...";
+        btCapture.Enabled = false;
+        btCapture.Text = "Capturing...";
 
         ExternalMethods._proc = ExternalMethods.LowCaptureClickPosition;
         ExternalMethods._hookID = ExternalMethods.SetHook(ExternalMethods._proc);
     }
 
-    bool iniciado = false;
-    int clickDelay = 10;
-    private void button1_Click(object sender, EventArgs e)
+    public void CaptureCallback(ExternalMethods.POINT point, int PID)
     {
-        if (!int.TryParse(textBox1.Text, out clickDelay) || clickDelay == 0)
+        Click click = new AutoClicker.Click
         {
-            MessageBox.Show("Por favor, insira um número inteiro para o atraso entre cliques.");
-            return;
+            point = point,
+            delay = 10,
+            PID = PID,
+            process = Process.GetProcessById(PID).ProcessName,
+            windowTitle = Process.GetProcessById(PID).MainWindowTitle,
+        };
+
+        if (!CLICKS.Any())
+        {
+            positionWindow(click.PID, click.point);
         }
 
-        btIniciar.Text = btIniciar.Text == "Iniciar" ? "Parar" : "Iniciar";
-        iniciado = !iniciado;
-        contadorGeral();
+        CLICKS.Add(click);
 
+        //reset form for future captures
+        btCapture.Enabled = true;
+        btCapture.Text = "Capture click";
 
-        Task.Run(async () => {
-            while (iniciado)
+        panel1.Controls.Clear();
+        foreach (var item in CLICKS)
+        {
+            addClickToPanel(item);
+        }
+    }
+
+    ControlAttributes getLastControlLocation()
+    {
+        ControlAttributes lastControlAttr = new();
+
+        if (panel1.Controls.Count > 0)
+        {
+            var lastControl = panel1.Controls[panel1.Controls.Count - 1];
+            lastControlAttr.location = lastControl.Location;
+            lastControlAttr.height = lastControl.Height;
+            lastControlAttr.width = lastControl.Width;
+            lastControlAttr.controlText = lastControl.Text;
+        }
+
+        return lastControlAttr;
+    }
+
+    void addClickToPanel(Click clk)
+    {
+        //label
+        var lastControlLocation = getLastControlLocation();
+        var label = new System.Windows.Forms.Label
+        {
+            Name = $"lbl_{clk.ID}",
+            Text = $"Título: {clk.windowTitle}\nProcesso: {clk.process}\nPID: {clk.PID}\nX: {clk.point.x}; Y: {clk.point.y}",
+            AutoSize = true,
+            Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
+        };
+        panel1.Controls.Add(label);
+        if (label.Width > panel1.Width)
+        {
+            panel1.Width = label.Width;
+        }
+
+        //delay label
+        lastControlLocation = getLastControlLocation();
+        var delayLabel = new System.Windows.Forms.Label
+        {
+            Name = $"lblDelay_{clk.ID}",
+            Text = $"Delay: {clk.delay}",
+            AutoSize = true,
+            Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
+        };
+        panel1.Controls.Add(delayLabel);
+
+        //time left label
+        lastControlLocation = getLastControlLocation();
+        var timeLeftLabel = new System.Windows.Forms.Label
+        {
+            Name = $"lblLeft_{clk.ID}",
+            Text = $"Time until click: ",
+            AutoSize = true,
+            Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
+        };
+        panel1.Controls.Add(timeLeftLabel);
+
+        //minus button
+        lastControlLocation = getLastControlLocation();
+        var minusButton = new Button
+        {
+            Name = $"btMinus_{clk.ID}",
+            Text = "-",
+            AutoSize = true,
+            Location = new Point(0, lastControlLocation.height + lastControlLocation.location.Y),
+        };
+        minusButton.Click += (s, e) =>
+        {
+            var click = CLICKS.Find(c => c.ID == clk.ID);
+            if (click?.delay > 0)
             {
-                await Task.Delay(TimeSpan.FromSeconds(clickDelay));
-                if (!iniciado)
-                {
-                    return;
-                }
-                Debug.WriteLine($"Clicando em X: {MouseX}, Y: {MouseY}");
-                ExternalMethods.MoveMouseClickAndReturn();
-                UltimoClick = DateTime.Now;
-                //ExternalMethods._hookID = ExternalMethods.SetHook(ExternalMethods._proc);
+                click?.delay -= 1;
             }
-        });
-        
+        };
+        panel1.Controls.Add(minusButton);
+
+
+        lastControlLocation = getLastControlLocation();
+        //plus button
+        var plusButton = new Button
+        {
+            Name = $"btPlus_{clk.ID}",
+            Text = "+",
+            AutoSize = true,
+            Location = new Point(lastControlLocation.width, lastControlLocation.location.Y),
+        };
+        plusButton.Click += (s, e) =>
+        {
+            var click = CLICKS.Find(c => c.ID == clk.ID);
+            click?.delay += 1;
+        };
+        panel1.Controls.Add(plusButton);
+
+
+        //remove button
+        var removeButton = new Button
+        {
+            Name = $"btRemove_{clk.ID}",
+            Text = "X",
+            AutoSize = true,
+            Margin = new Padding(5),
+            Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
+            Width = panel1.Width
+        };
+        removeButton.Click += (s, e) =>
+        {
+            var click = CLICKS.Find(c => c.ID == clk.ID);
+            CLICKS.Remove(click);
+            removeClickFromPanel(click);
+        };
+
+        panel1.Controls.Add(removeButton);
+    }
+    void removeClickFromPanel(Click clk)
+    {
+        var controls = panel1.Controls.OfType<Control>().Where(x => x.Name.Contains(clk.ID.ToString())).ToList();
+
+        foreach (Control item in controls)
+        {
+            panel1.Controls.Remove(item);
+        }
+
+        //reset positions after removal
+        panel1.Controls.Clear();
+        foreach (var item in CLICKS)
+        {
+            addClickToPanel(item);
+        }
+    }
+
+
+    private void btStartStop_Click(object sender, EventArgs e)
+    {
+        btStartStop.Text = btStartStop.Text == "Start" ? "Stop" : "Start";
+        isRunning = !isRunning;
     }
 }
