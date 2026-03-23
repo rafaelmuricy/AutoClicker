@@ -8,6 +8,6 @@ internal class Click
     public int PID;
     public string process = string.Empty;
     public string windowTitle = string.Empty;
-    public bool active = false;
+    public bool isRunning = false;
     public DateTime lastClick = DateTime.MinValue;
 }

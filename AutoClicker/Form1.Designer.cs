@@ -32,24 +32,26 @@ partial class Form1
         btStartStop = new Button();
         label1 = new Label();
         panel1 = new Panel();
-        label3 = new Label();
+        lblClock = new Label();
         SuspendLayout();
         // 
         // btCapture
         // 
-        btCapture.Location = new Point(12, 12);
+        btCapture.Dock = DockStyle.Top;
+        btCapture.Location = new Point(0, 0);
         btCapture.Name = "btCapture";
-        btCapture.Size = new Size(152, 23);
+        btCapture.Size = new Size(246, 35);
         btCapture.TabIndex = 2;
         btCapture.Text = "Capture click";
         btCapture.UseVisualStyleBackColor = true;
         btCapture.Click += btCapture_Click;
         // 
-        // btIniciar
+        // btStartStop
         // 
-        btStartStop.Location = new Point(38, 387);
-        btStartStop.Name = "btIniciar";
-        btStartStop.Size = new Size(149, 36);
+        btStartStop.Dock = DockStyle.Bottom;
+        btStartStop.Location = new Point(0, 414);
+        btStartStop.Name = "btStartStop";
+        btStartStop.Size = new Size(246, 36);
         btStartStop.TabIndex = 4;
         btStartStop.Text = "Start";
         btStartStop.UseVisualStyleBackColor = true;
@@ -66,21 +68,23 @@ partial class Form1
         // 
         // panel1
         // 
+        panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         panel1.AutoScroll = true;
         panel1.Location = new Point(12, 56);
         panel1.Name = "panel1";
-        panel1.Size = new Size(211, 325);
+        panel1.Size = new Size(222, 325);
         panel1.TabIndex = 6;
         panel1.Visible = false;
         // 
-        // label3
+        // lblClock
         // 
-        label3.AutoSize = true;
-        label3.Location = new Point(12, 426);
-        label3.Name = "label3";
-        label3.Size = new Size(49, 15);
-        label3.TabIndex = 7;
-        label3.Text = "00:00:00";
+        lblClock.AutoSize = true;
+        lblClock.Dock = DockStyle.Bottom;
+        lblClock.Location = new Point(0, 399);
+        lblClock.Name = "lblClock";
+        lblClock.Size = new Size(49, 15);
+        lblClock.TabIndex = 7;
+        lblClock.Text = "00:00:00";
         // 
         // Form1
         // 
@@ -88,7 +92,7 @@ partial class Form1
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(246, 450);
         Controls.Add(label1);
-        Controls.Add(label3);
+        Controls.Add(lblClock);
         Controls.Add(btStartStop);
         Controls.Add(panel1);
         Controls.Add(btCapture);
@@ -100,8 +104,8 @@ partial class Form1
 
     #endregion
     private Button btCapture;
+    private Label lblClock;
     private Button btStartStop;
     private Label label1;
     private Panel panel1;
-    private Label label3;
 }

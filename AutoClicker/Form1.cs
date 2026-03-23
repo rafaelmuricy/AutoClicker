@@ -12,7 +12,6 @@ public partial class Form1 : Form
         worker();
     }
 
-    bool isRunning = false;
     void worker()
     {
         Task.Run(async () =>
@@ -20,9 +19,10 @@ public partial class Form1 : Form
             while (true)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(300));
-                if (isRunning)
+
+                foreach (var item in CLICKS)
                 {
-                    foreach (var item in CLICKS)
+                    if (item.isRunning)
                     {
                         if ((DateTime.Now - item.lastClick).Seconds >= item.delay)
                         {
@@ -31,6 +31,7 @@ public partial class Form1 : Form
                         }
                     }
                 }
+
                 this.BeginInvoke(() =>
                 {
                     updatePanel();
@@ -42,20 +43,14 @@ public partial class Form1 : Form
 
     void updatePanel()
     {
-        if (isRunning)
+        foreach (var item in CLICKS)
         {
-            foreach (var item in CLICKS)
+            if (item.isRunning)
             {
                 panel1.Controls[$"lblLeft_{item.ID}"]?.Text = $"Time until click: {item.delay - (DateTime.Now - item.lastClick).Seconds}s";
-
-                if (panel1.Controls[$"lblDelay_{item.ID}"]?.Text != $"Delay: {item.delay}")
-                {
-                    panel1.Controls[$"lblDelay_{item.ID}"]?.Text = $"Delay: {item.delay}";
-                }
             }
         }
-
-        label3.Text = DateTime.Now.ToString("HH:mm:ss");
+        lblClock.Text = DateTime.Now.ToString("HH:mm:ss");
     }
 
     public void positionWindow(int pid, ExternalMethods.POINT mousePosition)
@@ -184,6 +179,7 @@ public partial class Form1 : Form
             Text = "-",
             AutoSize = true,
             Location = new Point(0, lastControlLocation.height + lastControlLocation.location.Y),
+            Width = (int)(panel1.Width * 0.5)
         };
         minusButton.Click += (s, e) =>
         {
@@ -192,6 +188,7 @@ public partial class Form1 : Form
             {
                 click?.delay -= 1;
             }
+            panel1.Controls[$"lblDelay_{clk.ID}"]!.Text = $"Delay: {click!.delay}";
         };
         panel1.Controls.Add(minusButton);
 
@@ -204,32 +201,51 @@ public partial class Form1 : Form
             Text = "+",
             AutoSize = true,
             Location = new Point(lastControlLocation.width, lastControlLocation.location.Y),
+            Width = (int)(panel1.Width * 0.7)
         };
         plusButton.Click += (s, e) =>
         {
             var click = CLICKS.Find(c => c.ID == clk.ID);
             click?.delay += 1;
+            panel1.Controls[$"lblDelay_{clk.ID}"]!.Text = $"Delay: {click!.delay}";
         };
         panel1.Controls.Add(plusButton);
 
+        //start stop button
+        lastControlLocation = getLastControlLocation();
+        var startStopButton = new Button
+        {
+            Name = $"btStartStop_{clk.ID}",
+            Text = "Start/Stop",
+            AutoSize = true,
+            Margin = new Padding(5),
+            Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
+            Width = (int)(panel1.Width * 0.7)
+        };
+        startStopButton.Click += (s, e) =>
+        {
+            var click = CLICKS.Find(c => c.ID == clk.ID);
+            click.isRunning = !click.isRunning;
+        };
+        panel1.Controls.Add(startStopButton);
 
         //remove button
+        lastControlLocation = getLastControlLocation();
         var removeButton = new Button
         {
             Name = $"btRemove_{clk.ID}",
             Text = "X",
             AutoSize = true,
             Margin = new Padding(5),
-            Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
-            Width = panel1.Width
+            Location = new Point(lastControlLocation.width, lastControlLocation.location.Y),
+            Width = (int)(panel1.Width * 0.3)
         };
         removeButton.Click += (s, e) =>
         {
             var click = CLICKS.Find(c => c.ID == clk.ID);
-            CLICKS.Remove(click);
-            removeClickFromPanel(click);
+            CLICKS.Remove(click!);
+            removeClickFromPanel(click!);
         };
-
         panel1.Controls.Add(removeButton);
     }
     void removeClickFromPanel(Click clk)
@@ -252,7 +268,16 @@ public partial class Form1 : Form
 
     private void btStartStop_Click(object sender, EventArgs e)
     {
+        if (btStartStop.Text == "Start")
+        {
+            CLICKS.ForEach(c => c.isRunning = true);
+        }
+        else
+        {
+            CLICKS.ForEach(c => c.isRunning = false);
+        }
+
+
         btStartStop.Text = btStartStop.Text == "Start" ? "Stop" : "Start";
-        isRunning = !isRunning;
     }
 }

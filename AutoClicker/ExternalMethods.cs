@@ -25,12 +25,10 @@ public partial class ExternalMethods
     // Hook
     public static IntPtr SetHook(LowLevelMouseProc proc)
     {
-        using (var curProcess = Process.GetCurrentProcess())
-        using (var curModule = curProcess.MainModule)
-        {
-            return SetWindowsHookEx(WH_MOUSE_LL, proc,
-                GetModuleHandle(curModule.ModuleName), 0);
-        }
+        using var curProcess = Process.GetCurrentProcess();
+        using var curModule = curProcess.MainModule;
+        return SetWindowsHookEx(WH_MOUSE_LL, proc,
+            GetModuleHandle(curModule.ModuleName), 0);
     }
 
     public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -109,31 +107,6 @@ public partial class ExternalMethods
         // retorna
         Debug.WriteLine($"[{DateTime.Now}] voltei");
         SetCursorPos(originalPosition.x, originalPosition.y);
-
-        /////////TESTE
-        return;
-
-
-        // Pequeno delay (opcional, mas mais seguro)
-        Thread.Sleep(1);
-
-        // Clique
-        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, UIntPtr.Zero);
-        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, UIntPtr.Zero);
-
-        // Delay antes de voltar
-        Thread.Sleep(1);
-
-        // Retorna para posição original
-        SetCursorPos(originalPosition.x, originalPosition.y);
-        // Clique
-        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, UIntPtr.Zero);
-        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, UIntPtr.Zero);
-
-
-        // Remove hook imediatamente
-        UnhookWindowsHookEx(_hookID);
-
     }
 
     // WinAPI
