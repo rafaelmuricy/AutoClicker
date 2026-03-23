@@ -139,7 +139,7 @@ public partial class Form1 : Form
         var label = new System.Windows.Forms.Label
         {
             Name = $"lbl_{clk.ID}",
-            Text = $"Título: {clk.windowTitle}\nProcesso: {clk.process}\nPID: {clk.PID}\nX: {clk.point.x}; Y: {clk.point.y}",
+            Text = $"Title: {clk.windowTitle}\nProcess: {clk.process}\nPID: {clk.PID}\nX: {clk.point.x}; Y: {clk.point.y}",
             AutoSize = true,
             Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
         };
@@ -193,15 +193,15 @@ public partial class Form1 : Form
         panel1.Controls.Add(minusButton);
 
 
-        lastControlLocation = getLastControlLocation();
         //plus button
+        lastControlLocation = getLastControlLocation();
         var plusButton = new Button
         {
             Name = $"btPlus_{clk.ID}",
             Text = "+",
             AutoSize = true,
             Location = new Point(lastControlLocation.width, lastControlLocation.location.Y),
-            Width = (int)(panel1.Width * 0.7)
+            Width = (int)(panel1.Width * 0.5)
         };
         plusButton.Click += (s, e) =>
         {
@@ -216,7 +216,7 @@ public partial class Form1 : Form
         var startStopButton = new Button
         {
             Name = $"btStartStop_{clk.ID}",
-            Text = "Start/Stop",
+            Text = "Start",
             AutoSize = true,
             Margin = new Padding(5),
             Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
@@ -225,7 +225,15 @@ public partial class Form1 : Form
         startStopButton.Click += (s, e) =>
         {
             var click = CLICKS.Find(c => c.ID == clk.ID);
-            click.isRunning = !click.isRunning;
+            click!.isRunning = !click.isRunning;
+            if (click.isRunning)
+            {
+                panel1.Controls[$"btStartStop_{clk.ID}"]?.Text = "Stop";
+            }
+            else
+            {
+                panel1.Controls[$"btStartStop_{clk.ID}"]?.Text = "Start";
+            }
         };
         panel1.Controls.Add(startStopButton);
 
@@ -268,7 +276,7 @@ public partial class Form1 : Form
 
     private void btStartStop_Click(object sender, EventArgs e)
     {
-        if (btStartStop.Text == "Start")
+        if (btStartStop.Text == "Start All")
         {
             CLICKS.ForEach(c => c.isRunning = true);
         }
@@ -278,6 +286,6 @@ public partial class Form1 : Form
         }
 
 
-        btStartStop.Text = btStartStop.Text == "Start" ? "Stop" : "Start";
+        btStartStop.Text = btStartStop.Text == "Start All" ? "Stop All" : "Start All";
     }
 }

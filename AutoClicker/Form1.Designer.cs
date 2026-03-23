@@ -53,7 +53,7 @@ partial class Form1
         btStartStop.Name = "btStartStop";
         btStartStop.Size = new Size(246, 36);
         btStartStop.TabIndex = 4;
-        btStartStop.Text = "Start";
+        btStartStop.Text = "Start All";
         btStartStop.UseVisualStyleBackColor = true;
         btStartStop.Click += btStartStop_Click;
         // 
