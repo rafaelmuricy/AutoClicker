@@ -1,3 +1,12 @@
 <Solution>
-  <Project Path="AutoClicker/AutoClicker.csproj" />
+  <Project Path="App1/AutoClickerWinUI3.csproj">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
+  <Project Path="AutoClicker/AutoClickerWinForms.csproj" />
+  <Project Path="AutoClickerMaui/AutoClickerMaui.csproj" Id="3633a391-8bc1-4641-93fd-3dbf38044f68">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="AutoClickerWPF/AutoClickerWPF.csproj" Id="0ba8d1ed-03f8-459b-b210-8c5de2a5e39c" />
+  <Project Path="WinAPIHandler/WinAPIHandler.csproj" Id="3e06d126-1e4c-4179-861a-2763559b8279" />
 </Solution>

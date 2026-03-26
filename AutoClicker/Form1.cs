@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using WinAPIHandler;
 
 namespace AutoClicker;
 
@@ -84,12 +85,13 @@ public partial class Form1 : Form
         btCapture.Text = "Capturing...";
 
         ExternalMethods._proc = ExternalMethods.LowCaptureClickPosition;
+        ExternalMethods.CaptureCallback = CaptureCallback;
         ExternalMethods._hookID = ExternalMethods.SetHook(ExternalMethods._proc);
     }
 
     public void CaptureCallback(ExternalMethods.POINT point, int PID)
     {
-        Click click = new AutoClicker.Click
+        Click click = new Click
         {
             point = point,
             delay = 10,

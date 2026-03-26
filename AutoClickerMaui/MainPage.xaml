@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AutoClickerMaui"
+             x:Class="AutoClickerMaui.MainPage"
+             x:DataType="vm:MainPageVM">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="btCapture" Text="Capture Click" Height="35" Clicked="btCapture_Clicked"></Button>
+        <Label Text="Clicks" Grid.Row="1"></Label>
+        <ScrollView Grid.Row="2" VerticalScrollBarVisibility="Default">
+            <StackLayout  x:Name="panel1">
+            </StackLayout>
+
+        </ScrollView>
+
+        <Label Text="{ x:Binding Clock, Mode=OneWay}" Grid.Row="3"></Label>
+        <Button x:Name="btStartStop" Clicked="btStartStop_Click" Text="Start All" Height="35" Grid.Row="4"></Button>
+    </Grid>
+</ContentPage>

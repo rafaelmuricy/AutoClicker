@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
-namespace AutoClicker;
+namespace App1;
 
 public partial class ExternalMethods
 {
@@ -27,8 +30,10 @@ public partial class ExternalMethods
     {
         using var curProcess = Process.GetCurrentProcess();
         using var curModule = curProcess.MainModule;
+        //return SetWindowsHookEx(WH_MOUSE_LL, proc,
+        //    GetModuleHandle(curModule.ModuleName), 0);
         return SetWindowsHookEx(WH_MOUSE_LL, proc,
-            GetModuleHandle(curModule.ModuleName), 0);
+            IntPtr.Zero, 0);
     }
 
     public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -36,20 +41,11 @@ public partial class ExternalMethods
     private const int WH_MOUSE_LL = 14;
     private const int WM_LBUTTONDOWN = 0x0201;
 
-    /// <summary>
-    /// Processes low-level mouse hook events and determines whether to handle or pass them to the next hook procedure.
-    /// </summary>
-    /// <remarks>If the mouse left button is pressed, the method retrieves information about the window and
-    /// process under the cursor, removes the hook, and invokes a callback on the application's main form. The method
-    /// should be used as a callback for a low-level mouse hook (WH_MOUSE_LL).</remarks>
-    /// <param name="nCode">A code that indicates the hook procedure action. If this value is less than zero, the hook procedure must pass
-    /// the message to the next hook procedure without further processing.</param>
-    /// <param name="wParam">The identifier of the mouse message. Typically corresponds to a Windows message such as WM_LBUTTONDOWN.</param>
-    /// <param name="lParam">A pointer to a structure containing information about the mouse event.</param>
-    /// <returns>A pointer to the result of the hook processing. Returns the value from the next hook procedure in the chain if
-    /// the event is not handled.</returns>
+    
+    public static Action<POINT, int>? CaptureCallback { set; get; }
     public static IntPtr LowCaptureClickPosition(int nCode, IntPtr wParam, IntPtr lParam)
     {
+        Debug.WriteLine($"[{DateTime.Now.ToString("mm:ss:fff")}] wParam: {wParam.ToInt32()}");
         if (nCode >= 0 && wParam == (IntPtr)WM_LBUTTONDOWN)
         {
             MSLLHOOKSTRUCT hookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
@@ -68,16 +64,21 @@ public partial class ExternalMethods
             // Remove hook imediatamente
             UnhookWindowsHookEx(_hookID);
 
-            Application.OpenForms[0]?.BeginInvoke(new Action(() =>
+            //repensar
+            if (CaptureCallback is not null)
             {
-                Form1 form = (Form1)Application.OpenForms[0]!;
+                CaptureCallback(hookStruct.pt, (int)processId);
+            }
+            //Application.OpenForms[0]?.BeginInvoke(new Action(() =>
+            //{
+            //    Form1 form = (Form1)Application.OpenForms[0]!;
 
-                form.CaptureCallback(hookStruct.pt, (int)processId);
+            //    form.CaptureCallback(hookStruct.pt, (int)processId);
 
-                //form.Controls["label1"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
-                //form.Controls["label2"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
-                //form.position((int)processId, hookStruct);
-            }));
+            //    //form.Controls["label1"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
+            //    //form.Controls["label2"]?.Text = $"X: {hookStruct.pt.x}; Y: {hookStruct.pt.y}";
+            //    //form.position((int)processId, hookStruct);
+            //}));
         }
 
         return CallNextHookEx(_hookID, nCode, wParam, lParam);
@@ -131,11 +132,13 @@ public partial class ExternalMethods
     [DllImport("user32.dll")]
     private static extern IntPtr WindowFromPoint(POINT Point);
 
-    [DllImport("user32.dll")]
-    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+    //[DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
-    [DllImport("user32.dll")]
-    private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+    //[DllImport("user32.dll")]
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowsHookExW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -144,8 +147,9 @@ public partial class ExternalMethods
     [DllImport("user32.dll")]
     private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("kernel32.dll")]
-    private static extern IntPtr GetModuleHandle(string lpModuleName);
+    //[DllImport("kernel32.dll")]
+    [LibraryImport("kernel32.dll", EntryPoint = "GetModuleHandleW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial IntPtr GetModuleHandle(string lpModuleName);
 
     [DllImport("user32.dll")]
     private static extern bool SetCursorPos(int X, int Y);

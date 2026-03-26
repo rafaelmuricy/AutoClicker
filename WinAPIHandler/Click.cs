@@ -1,8 +1,8 @@
-﻿namespace AutoClicker;
+﻿namespace WinAPIHandler;
 
-internal class Click
+public class Click
 {
-    public Guid ID = Guid.NewGuid();
+    public string ID = Guid.NewGuid().ToString().Replace("-", "_");
     public ExternalMethods.POINT point;
     public int delay = 10;
     public int PID;
