@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:AutoClickerAvalonia.ViewModels"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:Class="AutoClickerAvalonia.Views.MainWindow"
+		x:DataType="vm:MainWindowVM"
+		Icon="/Assets/avalonia-logo.ico"
+		Title="AutoClickerAvalonia"
+		Height="489"
+		Width="262"
+		>
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+		to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MainWindowVM/>
+	</Design.DataContext>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		
+		<Button x:Name="btCapture" Content="Capture click" Click="btCapture_Click" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+		<TextBlock Text="Clicks:" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Margin="5"/>
+		<ScrollViewer Grid.Row="2" >
+			<StackPanel x:Name="panel1" Margin="5">
+
+			</StackPanel>
+		</ScrollViewer>
+		<TextBlock x:Name="lblClock" Text="{Binding Clock}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3"/>
+		<Button x:Name="btStartStop" Click="btStartStop_Click" Content="Start All" Height="35" Grid.Row="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"></Button>
+	</Grid>
+</Window>
