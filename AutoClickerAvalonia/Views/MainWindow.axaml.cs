@@ -57,7 +57,6 @@ public partial class MainWindow : Window
             {
                 if (item.isRunning)
                 {
-                    item.timeLeft = item.delay - (DateTime.Now - item.lastClick).Seconds;
                     panel1.Children.OfType<TextBlock>().First(x => x.Name == $"lblLeft_{item.ID}").Text = $"Time until click: {item.delay - (DateTime.Now - item.lastClick).Seconds}s";
                 }
             }
@@ -130,15 +129,6 @@ public partial class MainWindow : Window
         };
         panel1.Children.Add(timeLeftLabel);
 
-        //time left label
-        var timeLeftLabel2 = new TextBlock
-        {
-            Name = $"lblLeft2_{clk.ID}",
-            Text = $"Time until click2: ",
-        };
-        timeLeftLabel2.Bind(TextBlock.TextProperty, new Avalonia.Data.Binding($"VM.Clicks[{VM.Clicks.IndexOf(clk)}].timeLeft"));
-        panel1.Children.Add(timeLeftLabel2);
-
         var sidePanel1 = new StackPanel
         {
             Name = $"panel1_{clk.ID}",
@@ -155,7 +145,7 @@ public partial class MainWindow : Window
         };
         minusButton.Click += (s, e) =>
         {
-            var click = VM.Clicks.First(c => c.ID == clk.ID);
+            var click = VM.Clicks.Find(c => c.ID == clk.ID);
             if (click?.delay > 0)
             {
                 click?.delay -= 1;
@@ -175,7 +165,7 @@ public partial class MainWindow : Window
         };
         plusButton.Click += (s, e) =>
         {
-            var click = VM.Clicks.First(c => c.ID == clk.ID);
+            var click = VM.Clicks.Find(c => c.ID == clk.ID);
             click?.delay += 1;
             panel1.Children.OfType<TextBlock>().First(x => x.Name == $"lblDelay_{clk.ID}").Text = $"Delay: {click!.delay}";
         };
@@ -193,7 +183,7 @@ public partial class MainWindow : Window
         };
         startStopButton.Click += (s, e) =>
         {
-            var click = VM.Clicks.First(c => c.ID == clk.ID);
+            var click = VM.Clicks.Find(c => c.ID == clk.ID);
             click!.isRunning = !click.isRunning;
             if (click.isRunning)
             {
@@ -216,7 +206,7 @@ public partial class MainWindow : Window
         };
         removeButton.Click += (s, e) =>
         {
-            var click = VM.Clicks.First(c => c.ID == clk.ID);
+            var click = VM.Clicks.Find(c => c.ID == clk.ID);
             VM.Clicks.Remove(click!);
             removeClickFromPanel(click!);
         };
@@ -238,12 +228,12 @@ public partial class MainWindow : Window
     {
         if (btStartStop.Content.ToString() == "Start All")
         {
-            VM.Clicks.ToList().ForEach(c => c.isRunning = true);
+            VM.Clicks.ForEach(c => c.isRunning = true);
             btStartStop.Content = "Stop All";
         }
         else
         {
-            VM.Clicks.ToList().ForEach(c => c.isRunning = false);
+            VM.Clicks.ForEach(c => c.isRunning = false);
             btStartStop.Content = "Start All";
         }
     }

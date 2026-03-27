@@ -27,17 +27,15 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
-
+		
 		<Button x:Name="btCapture" Content="Capture click" Click="btCapture_Click" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
 		<TextBlock Text="Clicks:" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Margin="5"/>
 		<ScrollViewer Grid.Row="2" >
 			<StackPanel x:Name="panel1" Margin="5">
 
 			</StackPanel>
-
 		</ScrollViewer>
-
-		<TextBlock x:Name="lblClock" Text="{Binding Clock}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4"/>
-		<Button x:Name="btStartStop" Click="btStartStop_Click" Content="Start All" Height="35" Grid.Row="5" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"></Button>
+		<TextBlock x:Name="lblClock" Text="{Binding Clock}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3"/>
+		<Button x:Name="btStartStop" Click="btStartStop_Click" Content="Start All" Height="35" Grid.Row="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"></Button>
 	</Grid>
 </Window>
