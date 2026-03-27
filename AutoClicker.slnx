@@ -1,9 +1,9 @@
 <Solution>
-  <Project Path="App1/AutoClickerWinUI3.csproj">
+  <Project Path="AutoClickerWinUI3/AutoClickerWinUI3.csproj">
     <Platform Project="x64" />
     <Deploy />
   </Project>
-  <Project Path="AutoClicker/AutoClickerWinForms.csproj" />
+  <Project Path="AutoClickerWinForms/AutoClickerWinForms.csproj" />
   <Project Path="AutoClickerAvalonia/AutoClickerAvalonia.csproj" Id="ecd0e0b4-862c-496d-972f-e8a0c4e05172" />
   <Project Path="AutoClickerMaui/AutoClickerMaui.csproj" Id="3633a391-8bc1-4641-93fd-3dbf38044f68">
     <Deploy Solution="Debug|*" />

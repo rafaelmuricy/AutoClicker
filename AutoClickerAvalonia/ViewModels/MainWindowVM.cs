@@ -8,7 +8,7 @@ namespace AutoClickerAvalonia.ViewModels;
 public partial class MainWindowVM : ObservableObject
 {
     [ObservableProperty]
-    string clock;
+    string clock = "HH:mm:ss";
 
     [ObservableProperty]
     private List<Click> clicks = new();
