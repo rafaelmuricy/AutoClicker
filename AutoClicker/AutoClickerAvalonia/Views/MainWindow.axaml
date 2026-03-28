@@ -27,15 +27,63 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
-		
-		<Button x:Name="btCapture" Content="Capture click" Click="btCapture_Click" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+		<Button x:Name="btCapture" Content="{Binding BtCaptureLabel}" Command="{Binding Capture}" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsEnabled="{Binding BtCaptureEnabled}"/>
 		<TextBlock Text="Clicks:" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Margin="5"/>
 		<ScrollViewer Grid.Row="2" >
 			<StackPanel x:Name="panel1" Margin="5">
+				<ItemsControl ItemsSource="{Binding clicks}" x:Name="ItemsControlRoot">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel>
+								<TextBlock FontSize="12">
+                                        <Run Text="Title" />
+                                        <Run Text="{Binding WindowTitle}" />
+                                        <LineBreak />
+                                        <Run Text="Process" />
+                                        <Run Text="{Binding Process}" />
+                                        <LineBreak />
+                                        <Run Text="PID" />
+                                        <Run Text="{Binding Pid}" />
+                                        <LineBreak />
+                                        <Run Text="X: " />
+                                        <Run Text="{Binding Point.X}" />
+                                        <Run Text="Y: " />
+                                        <Run Text="{Binding Point.Y}" />
+                                    </TextBlock>
+                                    <TextBlock FontSize="12">
+                                    <Run Text="Delay: " />
+                                    <Run Text="{Binding Delay}" />
+                                    </TextBlock>
+                                    <TextBlock FontSize="12">
+                                    <Run Text="Time Left: " />
+                                    <Run Text="{Binding TimeLeft}" />
+                                    </TextBlock>
 
+
+                                    <Grid Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Content="-" HorizontalAlignment="Stretch" Grid.Column="0" Command="{Binding $parent[ItemsControl].DataContext.Minus}" CommandParameter="{Binding}"  />
+                                        <Button Content="+" HorizontalAlignment="Stretch" Grid.Column="1" Command="{Binding $parent[ItemsControl].DataContext.Plus}" CommandParameter="{Binding}" />
+                                    </Grid>
+                                    <Grid Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Content="{Binding BtStartStopLabel}" Grid.Column="0" HorizontalAlignment="Stretch" Command="{Binding $parent[ItemsControl].DataContext.StartStop}" CommandParameter="{Binding}"  />
+                                        <Button Content="X" Grid.Column="1" HorizontalAlignment="Stretch" Command="{Binding $parent[ItemsControl].DataContext.Delete}" CommandParameter="{Binding}" ></Button>
+                                    </Grid>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
 			</StackPanel>
 		</ScrollViewer>
 		<TextBlock x:Name="lblClock" Text="{Binding Clock}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3"/>
-		<Button x:Name="btStartStop" Click="btStartStop_Click" Content="Start All" Height="35" Grid.Row="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"></Button>
+		<Button x:Name="btStartStop" Command="{Binding StartStopAll}" Content="{Binding BtStartStopLabel}" Height="35" Grid.Row="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"></Button>
 	</Grid>
 </Window>

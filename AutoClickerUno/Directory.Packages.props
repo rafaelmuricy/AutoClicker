@@ -7,4 +7,7 @@
   -->
   <ItemGroup>
   </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+  </ItemGroup>
 </Project>

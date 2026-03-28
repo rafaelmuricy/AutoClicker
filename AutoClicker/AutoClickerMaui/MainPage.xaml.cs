@@ -24,12 +24,12 @@ public partial class MainPage : ContentPage
 
                 foreach (var item in VM.CLICKS)
                 {
-                    if (item.isRunning)
+                    if (item.IsRunning)
                     {
-                        if ((DateTime.Now - item.lastClick).Seconds >= item.delay)
+                        if ((DateTime.Now - item.LastClick).Seconds >= item.Delay)
                         {
-                            ExternalMethods.MoveMouseClickAndReturn(item.point);
-                            item.lastClick = DateTime.Now;
+                            ExternalMethods.MoveMouseClickAndReturn(item.Point);
+                            item.LastClick = DateTime.Now;
                         }
                     }
                 }
@@ -45,11 +45,11 @@ public partial class MainPage : ContentPage
     {
         foreach (var item in VM.CLICKS)
         {
-            if (item.isRunning)
+            if (item.IsRunning)
             {
                 Dispatcher.DispatchAsync(async () =>
                 {
-                    panel1.Children.OfType<Label>().First(x => x.AutomationId == $"lblLeft_{item.ID}").Text = $"Time until click: {item.delay - (DateTime.Now - item.lastClick).Seconds}s";
+                    panel1.Children.OfType<Label>().First(x => x.AutomationId == $"lblLeft_{item.Id}").Text = $"Time until click: {item.Delay - (DateTime.Now - item.LastClick).Seconds}s";
                 });
             }
         }
@@ -82,11 +82,11 @@ public partial class MainPage : ContentPage
     {
         Click click = new Click
         {
-            point = point,
-            delay = 10,
-            PID = PID,
-            process = Process.GetProcessById(PID).ProcessName,
-            windowTitle = Process.GetProcessById(PID).MainWindowTitle,
+            Point = point,
+            Delay = 10,
+            Pid = PID,
+            Process = Process.GetProcessById(PID).ProcessName,
+            WindowTitle = Process.GetProcessById(PID).MainWindowTitle,
         };
 
         if (!VM.CLICKS.Any())
@@ -112,8 +112,8 @@ public partial class MainPage : ContentPage
         //label
         var label = new Label
         {
-            AutomationId = $"lbl_{clk.ID}",
-            Text = $"Title: {clk.windowTitle}\nProcess: {clk.process}\nPID: {clk.PID}\nX: {clk.point.x}; Y: {clk.point.y}",
+            AutomationId = $"lbl_{clk.Id}",
+            Text = $"Title: {clk.WindowTitle}\nProcess: {clk.Process}\nPID: {clk.Pid}\nX: {clk.Point.x}; Y: {clk.Point.y}",
         };
         panel1.Children.Add(label);
 
@@ -121,41 +121,41 @@ public partial class MainPage : ContentPage
         //delay label
         var delayLabel = new Label
         {
-            AutomationId = $"lblDelay_{clk.ID}",
-            Text = $"Delay: {clk.delay}",
+            AutomationId = $"lblDelay_{clk.Id}",
+            Text = $"Delay: {clk.Delay}",
         };
         panel1.Children.Add(delayLabel);
 
         //time left label
         var timeLeftLabel = new Label
         {
-            AutomationId = $"lblLeft_{clk.ID}",
+            AutomationId = $"lblLeft_{clk.Id}",
             Text = $"Time until click: ",
         };
         panel1.Children.Add(timeLeftLabel);
 
         var sidePanel1 = new StackLayout
         {
-            AutomationId = $"panel1_{clk.ID}",
+            AutomationId = $"panel1_{clk.Id}",
             Orientation = StackOrientation.Horizontal,
         };
 
         //minus button
         var minusButton = new Button
         {
-            AutomationId = $"btMinus_{clk.ID}",
+            AutomationId = $"btMinus_{clk.Id}",
             Text = "-",
             Margin = new Thickness(5)
             //Width = (int)(panel1.Width * 0.5)
         };
         minusButton.Clicked += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
-            if (click?.delay > 0)
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
+            if (click?.Delay > 0)
             {
-                click?.delay -= 1;
+                click?.Delay -= 1;
             }
-            panel1.Children.OfType<Label>().First(x => x.AutomationId == $"lblDelay_{clk.ID}").Text = $"Delay: {click!.delay}";
+            panel1.Children.OfType<Label>().First(x => x.AutomationId == $"lblDelay_{clk.Id}").Text = $"Delay: {click!.Delay}";
         };
         sidePanel1.Children.Add(minusButton);
 
@@ -163,16 +163,16 @@ public partial class MainPage : ContentPage
         //plus button
         var plusButton = new Button
         {
-            AutomationId = $"btPlus_{clk.ID}",
+            AutomationId = $"btPlus_{clk.Id}",
             Text = "+",
             Margin = new Thickness(5)
             //Width = (int)(panel1.Width * 0.5)
         };
         plusButton.Clicked += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
-            click?.delay += 1;
-            panel1.Children.OfType<Label>().First(x => x.AutomationId == $"lblDelay_{clk.ID}").Text = $"Delay: {click!.delay}";
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
+            click?.Delay += 1;
+            panel1.Children.OfType<Label>().First(x => x.AutomationId == $"lblDelay_{clk.Id}").Text = $"Delay: {click!.Delay}";
         };
         sidePanel1.Children.Add(plusButton);
 
@@ -181,22 +181,22 @@ public partial class MainPage : ContentPage
         //start stop button
         var startStopButton = new Button
         {
-            AutomationId = $"btStartStop_{clk.ID}",
+            AutomationId = $"btStartStop_{clk.Id}",
             Text = "Start",
             Margin = new Thickness(5),
             //Width = (int)(panel1.Width * 0.7)
         };
         startStopButton.Clicked += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
-            click!.isRunning = !click.isRunning;
-            if (click.isRunning)
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
+            click!.IsRunning = !click.IsRunning;
+            if (click.IsRunning)
             {
-                panel1.Children.OfType<Button>().First(x => x.AutomationId == $"btStartStop_{clk.ID}").Text = "Stop";
+                panel1.Children.OfType<Button>().First(x => x.AutomationId == $"btStartStop_{clk.Id}").Text = "Stop";
             }
             else
             {
-                panel1.Children.OfType<Button>().First(x => x.AutomationId == $"btStartStop_{clk.ID}").Text = "Start";
+                panel1.Children.OfType<Button>().First(x => x.AutomationId == $"btStartStop_{clk.Id}").Text = "Start";
             }
         };
         panel1.Children.Add(startStopButton);
@@ -204,14 +204,14 @@ public partial class MainPage : ContentPage
         //remove button
         var removeButton = new Button
         {
-            AutomationId = $"btRemove_{clk.ID}",
+            AutomationId = $"btRemove_{clk.Id}",
             Text = "X",
             Margin = new Thickness(5),
             //Width = (int)(panel1.Width * 0.3)
         };
         removeButton.Clicked += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
             VM.CLICKS.Remove(click!);
             removeClickFromPanel(click!);
         };
@@ -220,12 +220,12 @@ public partial class MainPage : ContentPage
 
     void removeClickFromPanel(Click clk)
     {
-        var controls = panel1.Children.OfType<View>().Where(x => x.AutomationId.Contains(clk.ID.ToString())).ToList();
+        var controls = panel1.Children.OfType<View>().Where(x => x.AutomationId.Contains(clk.Id.ToString())).ToList();
 
         var panelChildren = panel1.Children;
         for (int i = panelChildren.Count - 1; i >= 0; i--)
         {
-            if ((panelChildren[i] as View).AutomationId.Contains(clk.ID))
+            if ((panelChildren[i] as View).AutomationId.Contains(clk.Id))
             {
                 panel1.Children.RemoveAt(i);
             }
@@ -236,12 +236,12 @@ public partial class MainPage : ContentPage
     {
         if (btStartStop.Text.ToString() == "Start All")
         {
-            VM.CLICKS.ForEach(c => c.isRunning = true);
+            VM.CLICKS.ForEach(c => c.IsRunning = true);
             btStartStop.Text = "Stop All";
         }
         else
         {
-            VM.CLICKS.ForEach(c => c.isRunning = false);
+            VM.CLICKS.ForEach(c => c.IsRunning = false);
             btStartStop.Text = "Start All";
         }
     }

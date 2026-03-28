@@ -37,5 +37,8 @@
       SkiaRenderer;
     </UnoFeatures>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AutoClicker\WinAPIHandler\WinAPIHandler.csproj" />
+  </ItemGroup>
 
 </Project>

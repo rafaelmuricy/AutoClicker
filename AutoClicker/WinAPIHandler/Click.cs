@@ -1,13 +1,48 @@
-﻿namespace WinAPIHandler;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class Click
+namespace WinAPIHandler;
+
+public partial class Click : ObservableObject
 {
-    public string ID = Guid.NewGuid().ToString().Replace("-", "_");
-    public ExternalMethods.POINT point;
-    public int delay = 10;
-    public int PID;
-    public string process = string.Empty;
-    public string windowTitle = string.Empty;
-    public bool isRunning = false;
-    public DateTime lastClick = DateTime.MinValue;
+    [ObservableProperty]
+    string id = Guid.NewGuid().ToString().Replace("-", "_");
+    
+    [ObservableProperty]
+    ExternalMethods.POINT point;
+    
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TimeLeft))]
+    int delay = 10;
+    
+    [ObservableProperty]
+    int pid;
+    
+    [ObservableProperty]
+    string process = string.Empty;
+    
+    [ObservableProperty]
+    string windowTitle = string.Empty;
+    
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BtStartStopLabel))]
+    bool isRunning = false;
+    
+    [ObservableProperty]
+    DateTime lastClick;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TimeLeft))]
+    DateTime currentTime;
+
+    public int TimeLeft
+    {
+        get
+        {
+            if (!IsRunning)
+                return 0;
+
+            return Delay - (DateTime.Now - LastClick).Seconds;
+        }
+    }
+    public string BtStartStopLabel { get { return IsRunning ? "Stop" : "Start"; } }
 }

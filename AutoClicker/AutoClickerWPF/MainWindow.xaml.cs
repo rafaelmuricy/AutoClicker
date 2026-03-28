@@ -31,12 +31,12 @@ public partial class MainWindow : Window
 
                 foreach (var item in VM.CLICKS)
                 {
-                    if (item.isRunning)
+                    if (item.IsRunning)
                     {
-                        if ((DateTime.Now - item.lastClick).Seconds >= item.delay)
+                        if ((DateTime.Now - item.LastClick).Seconds >= item.Delay)
                         {
-                            ExternalMethods.MoveMouseClickAndReturn(item.point);
-                            item.lastClick = DateTime.Now;
+                            ExternalMethods.MoveMouseClickAndReturn(item.Point);
+                            item.LastClick = DateTime.Now;
                         }
                     }
                 }
@@ -52,11 +52,11 @@ public partial class MainWindow : Window
     {
         foreach (var item in VM.CLICKS)
         {
-            if (item.isRunning)
+            if (item.IsRunning)
             {
                 Dispatcher.BeginInvoke(async () =>
                 {
-                    panel1.Children.OfType<Label>().First(x => x.Name == $"lblLeft_{item.ID}").Content = $"Time until click: {item.delay - (DateTime.Now - item.lastClick).Seconds}s";
+                    panel1.Children.OfType<Label>().First(x => x.Name == $"lblLeft_{item.Id}").Content = $"Time until click: {item.Delay - (DateTime.Now - item.LastClick).Seconds}s";
                 });
             }
         }
@@ -77,11 +77,11 @@ public partial class MainWindow : Window
     {
         Click click = new Click
         {
-            point = point,
-            delay = 10,
-            PID = PID,
-            process = Process.GetProcessById(PID).ProcessName,
-            windowTitle = Process.GetProcessById(PID).MainWindowTitle,
+            Point = point,
+            Delay = 10,
+            Pid = PID,
+            Process = Process.GetProcessById(PID).ProcessName,
+            WindowTitle = Process.GetProcessById(PID).MainWindowTitle,
         };
 
         if (!VM.CLICKS.Any())
@@ -107,8 +107,8 @@ public partial class MainWindow : Window
         //label
         var label = new Label
         {
-            Name = $"lbl_{clk.ID}",
-            Content = $"Title: {clk.windowTitle}\nProcess: {clk.process}\nPID: {clk.PID}\nX: {clk.point.x}; Y: {clk.point.y}",
+            Name = $"lbl_{clk.Id}",
+            Content = $"Title: {clk.WindowTitle}\nProcess: {clk.Process}\nPID: {clk.Pid}\nX: {clk.Point.x}; Y: {clk.Point.y}",
         };
         panel1.Children.Add(label);
         
@@ -116,22 +116,22 @@ public partial class MainWindow : Window
         //delay label
         var delayLabel = new Label
         {
-            Name = $"lblDelay_{clk.ID}",
-            Content = $"Delay: {clk.delay}",
+            Name = $"lblDelay_{clk.Id}",
+            Content = $"Delay: {clk.Delay}",
         };
         panel1.Children.Add(delayLabel);
 
         //time left label
         var timeLeftLabel = new Label
         {
-            Name = $"lblLeft_{clk.ID}",
+            Name = $"lblLeft_{clk.Id}",
             Content = $"Time until click: ",
         };
         panel1.Children.Add(timeLeftLabel);
 
         var sidePanel1 = new UniformGrid
         {
-            Name = $"panel1_{clk.ID}",
+            Name = $"panel1_{clk.Id}",
             Rows = 1,
             Columns = 2
         };
@@ -139,19 +139,19 @@ public partial class MainWindow : Window
         //minus button
         var minusButton = new Button
         {
-            Name = $"btMinus_{clk.ID}",
+            Name = $"btMinus_{clk.Id}",
             Content = "-",
             Margin = new Thickness(5)
             //Width = (int)(panel1.Width * 0.5)
         };
         minusButton.Click += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
-            if (click?.delay > 0)
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
+            if (click?.Delay > 0)
             {
-                click?.delay -= 1;
+                click?.Delay -= 1;
             }
-            panel1.Children.OfType<Label>().First(x => x.Name == $"lblDelay_{clk.ID}").Content = $"Delay: {click!.delay}";
+            panel1.Children.OfType<Label>().First(x => x.Name == $"lblDelay_{clk.Id}").Content = $"Delay: {click!.Delay}";
         };
         sidePanel1.Children.Add(minusButton);
 
@@ -159,16 +159,16 @@ public partial class MainWindow : Window
         //plus button
         var plusButton = new Button
         {
-            Name = $"btPlus_{clk.ID}",
+            Name = $"btPlus_{clk.Id}",
             Content = "+",
             Margin = new Thickness(5)
             //Width = (int)(panel1.Width * 0.5)
         };
         plusButton.Click += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
-            click?.delay += 1;
-            panel1.Children.OfType<Label>().First(x => x.Name == $"lblDelay_{clk.ID}").Content = $"Delay: {click!.delay}";
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
+            click?.Delay += 1;
+            panel1.Children.OfType<Label>().First(x => x.Name == $"lblDelay_{clk.Id}").Content = $"Delay: {click!.Delay}";
         };
         sidePanel1.Children.Add(plusButton);
 
@@ -177,22 +177,22 @@ public partial class MainWindow : Window
         //start stop button
         var startStopButton = new Button
         {
-            Name = $"btStartStop_{clk.ID}",
+            Name = $"btStartStop_{clk.Id}",
             Content = "Start",
             Margin = new Thickness(5),
             //Width = (int)(panel1.Width * 0.7)
         };
         startStopButton.Click += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
-            click!.isRunning = !click.isRunning;
-            if (click.isRunning)
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
+            click!.IsRunning = !click.IsRunning;
+            if (click.IsRunning)
             {
-                panel1.Children.OfType<Button>().First(x => x.Name == $"btStartStop_{clk.ID}").Content = "Stop";
+                panel1.Children.OfType<Button>().First(x => x.Name == $"btStartStop_{clk.Id}").Content = "Stop";
             }
             else
             {
-                panel1.Children.OfType<Button>().First(x => x.Name == $"btStartStop_{clk.ID}").Content = "Start";
+                panel1.Children.OfType<Button>().First(x => x.Name == $"btStartStop_{clk.Id}").Content = "Start";
             }
         };
         panel1.Children.Add(startStopButton);
@@ -200,14 +200,14 @@ public partial class MainWindow : Window
         //remove button
         var removeButton = new Button
         {
-            Name = $"btRemove_{clk.ID}",
+            Name = $"btRemove_{clk.Id}",
             Content= "X",
             Margin = new Thickness(5),
             //Width = (int)(panel1.Width * 0.3)
         };
         removeButton.Click += (s, e) =>
         {
-            var click = VM.CLICKS.Find(c => c.ID == clk.ID);
+            var click = VM.CLICKS.Find(c => c.Id == clk.Id);
             VM.CLICKS.Remove(click!);
             removeClickFromPanel(click!);
         };
@@ -216,12 +216,12 @@ public partial class MainWindow : Window
 
     void removeClickFromPanel(Click clk)
     {
-        var controls = panel1.Children.OfType<FrameworkElement>().Where(x => x.Name.Contains(clk.ID.ToString())).ToList();
+        var controls = panel1.Children.OfType<FrameworkElement>().Where(x => x.Name.Contains(clk.Id.ToString())).ToList();
 
         var panelChildren = panel1.Children;
         for (int i = panelChildren.Count - 1; i >= 0; i--)
         {
-            if ((panelChildren[i] as FrameworkElement).Name.Contains(clk.ID))
+            if ((panelChildren[i] as FrameworkElement).Name.Contains(clk.Id))
             {
                 panel1.Children.RemoveAt(i);
             }
@@ -232,12 +232,12 @@ public partial class MainWindow : Window
     {
         if (btStartStop.Content.ToString() == "Start All")
         {
-            VM.CLICKS.ForEach(c => c.isRunning = true);
+            VM.CLICKS.ForEach(c => c.IsRunning = true);
             btStartStop.Content = "Stop All";
         }
         else
         {
-            VM.CLICKS.ForEach(c => c.isRunning = false);
+            VM.CLICKS.ForEach(c => c.IsRunning = false);
             btStartStop.Content = "Start All";
         }
     }

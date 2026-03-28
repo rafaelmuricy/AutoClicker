@@ -119,6 +119,14 @@ public partial class ExternalMethods
     {
         public int x;
         public int y;
+        public int X
+        {
+            get => x;
+        }
+        public int Y
+        {
+            get => y;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

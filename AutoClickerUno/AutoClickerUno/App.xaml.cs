@@ -1,5 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Uno.Resizetizer;
+using Windows.Graphics;
+using Microsoft.UI.Windowing;
+
 
 namespace AutoClickerUno;
 
@@ -68,8 +71,8 @@ public partial class App : Application
                 .UseHttp((context, services) =>
                 {
 #if DEBUG
-                // DelegatingHandler will be automatically injected
-                services.AddTransient<DelegatingHandler, DebugHttpHandler>();
+                    // DelegatingHandler will be automatically injected
+                    services.AddTransient<DelegatingHandler, DebugHttpHandler>();
 #endif
 
                 })
@@ -80,7 +83,9 @@ public partial class App : Application
                 })
                 .UseNavigation(RegisterRoutes)
             );
+
         MainWindow = builder.Window;
+        MainWindow.AppWindow.Resize(new SizeInt32 { Height = 489, Width = 262 });
 
 #if DEBUG
         MainWindow.UseStudio();

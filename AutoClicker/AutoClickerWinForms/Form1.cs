@@ -23,12 +23,12 @@ public partial class Form1 : Form
 
                 foreach (var item in CLICKS)
                 {
-                    if (item.isRunning)
+                    if (item.IsRunning)
                     {
-                        if ((DateTime.Now - item.lastClick).Seconds >= item.delay)
+                        if ((DateTime.Now - item.LastClick).Seconds >= item.Delay)
                         {
-                            ExternalMethods.MoveMouseClickAndReturn(item.point);
-                            item.lastClick = DateTime.Now;
+                            ExternalMethods.MoveMouseClickAndReturn(item.Point);
+                            item.LastClick = DateTime.Now;
                         }
                     }
                 }
@@ -46,9 +46,9 @@ public partial class Form1 : Form
     {
         foreach (var item in CLICKS)
         {
-            if (item.isRunning)
+            if (item.IsRunning)
             {
-                panel1.Controls[$"lblLeft_{item.ID}"]?.Text = $"Time until click: {item.delay - (DateTime.Now - item.lastClick).Seconds}s";
+                panel1.Controls[$"lblLeft_{item.Id}"]?.Text = $"Time until click: {item.Delay - (DateTime.Now - item.LastClick).Seconds}s";
             }
         }
         lblClock.Text = DateTime.Now.ToString("HH:mm:ss");
@@ -93,16 +93,16 @@ public partial class Form1 : Form
     {
         Click click = new Click
         {
-            point = point,
-            delay = 10,
-            PID = PID,
-            process = Process.GetProcessById(PID).ProcessName,
-            windowTitle = Process.GetProcessById(PID).MainWindowTitle,
+            Point = point,
+            Delay = 10,
+            Pid = PID,
+            Process = Process.GetProcessById(PID).ProcessName,
+            WindowTitle = Process.GetProcessById(PID).MainWindowTitle,
         };
 
         if (!CLICKS.Any())
         {
-            positionWindow(click.PID, click.point);
+            positionWindow(click.Pid, click.Point);
         }
 
         CLICKS.Add(click);
@@ -140,8 +140,8 @@ public partial class Form1 : Form
         var lastControlLocation = getLastControlLocation();
         var label = new System.Windows.Forms.Label
         {
-            Name = $"lbl_{clk.ID}",
-            Text = $"Title: {clk.windowTitle}\nProcess: {clk.process}\nPID: {clk.PID}\nX: {clk.point.x}; Y: {clk.point.y}",
+            Name = $"lbl_{clk.Id}",
+            Text = $"Title: {clk.WindowTitle}\nProcess: {clk.Process}\nPID: {clk.Pid}\nX: {clk.Point.x}; Y: {clk.Point.y}",
             AutoSize = true,
             Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
         };
@@ -155,8 +155,8 @@ public partial class Form1 : Form
         lastControlLocation = getLastControlLocation();
         var delayLabel = new System.Windows.Forms.Label
         {
-            Name = $"lblDelay_{clk.ID}",
-            Text = $"Delay: {clk.delay}",
+            Name = $"lblDelay_{clk.Id}",
+            Text = $"Delay: {clk.Delay}",
             AutoSize = true,
             Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
         };
@@ -166,7 +166,7 @@ public partial class Form1 : Form
         lastControlLocation = getLastControlLocation();
         var timeLeftLabel = new System.Windows.Forms.Label
         {
-            Name = $"lblLeft_{clk.ID}",
+            Name = $"lblLeft_{clk.Id}",
             Text = $"Time until click: ",
             AutoSize = true,
             Location = new Point(0, lastControlLocation.location.Y + lastControlLocation.height),
@@ -177,7 +177,7 @@ public partial class Form1 : Form
         lastControlLocation = getLastControlLocation();
         var minusButton = new Button
         {
-            Name = $"btMinus_{clk.ID}",
+            Name = $"btMinus_{clk.Id}",
             Text = "-",
             AutoSize = true,
             Location = new Point(0, lastControlLocation.height + lastControlLocation.location.Y),
@@ -185,12 +185,12 @@ public partial class Form1 : Form
         };
         minusButton.Click += (s, e) =>
         {
-            var click = CLICKS.Find(c => c.ID == clk.ID);
-            if (click?.delay > 0)
+            var click = CLICKS.Find(c => c.Id == clk.Id);
+            if (click?.Delay > 0)
             {
-                click?.delay -= 1;
+                click?.Delay -= 1;
             }
-            panel1.Controls[$"lblDelay_{clk.ID}"]!.Text = $"Delay: {click!.delay}";
+            panel1.Controls[$"lblDelay_{clk.Id}"]!.Text = $"Delay: {click!.Delay}";
         };
         panel1.Controls.Add(minusButton);
 
@@ -199,7 +199,7 @@ public partial class Form1 : Form
         lastControlLocation = getLastControlLocation();
         var plusButton = new Button
         {
-            Name = $"btPlus_{clk.ID}",
+            Name = $"btPlus_{clk.Id}",
             Text = "+",
             AutoSize = true,
             Location = new Point(lastControlLocation.width, lastControlLocation.location.Y),
@@ -207,9 +207,9 @@ public partial class Form1 : Form
         };
         plusButton.Click += (s, e) =>
         {
-            var click = CLICKS.Find(c => c.ID == clk.ID);
-            click?.delay += 1;
-            panel1.Controls[$"lblDelay_{clk.ID}"]!.Text = $"Delay: {click!.delay}";
+            var click = CLICKS.Find(c => c.Id == clk.Id);
+            click?.Delay += 1;
+            panel1.Controls[$"lblDelay_{clk.Id}"]!.Text = $"Delay: {click!.Delay}";
         };
         panel1.Controls.Add(plusButton);
 
@@ -217,7 +217,7 @@ public partial class Form1 : Form
         lastControlLocation = getLastControlLocation();
         var startStopButton = new Button
         {
-            Name = $"btStartStop_{clk.ID}",
+            Name = $"btStartStop_{clk.Id}",
             Text = "Start",
             AutoSize = true,
             Margin = new Padding(5),
@@ -226,15 +226,15 @@ public partial class Form1 : Form
         };
         startStopButton.Click += (s, e) =>
         {
-            var click = CLICKS.Find(c => c.ID == clk.ID);
-            click!.isRunning = !click.isRunning;
-            if (click.isRunning)
+            var click = CLICKS.Find(c => c.Id == clk.Id);
+            click!.IsRunning = !click.IsRunning;
+            if (click.IsRunning)
             {
-                panel1.Controls[$"btStartStop_{clk.ID}"]?.Text = "Stop";
+                panel1.Controls[$"btStartStop_{clk.Id}"]?.Text = "Stop";
             }
             else
             {
-                panel1.Controls[$"btStartStop_{clk.ID}"]?.Text = "Start";
+                panel1.Controls[$"btStartStop_{clk.Id}"]?.Text = "Start";
             }
         };
         panel1.Controls.Add(startStopButton);
@@ -243,7 +243,7 @@ public partial class Form1 : Form
         lastControlLocation = getLastControlLocation();
         var removeButton = new Button
         {
-            Name = $"btRemove_{clk.ID}",
+            Name = $"btRemove_{clk.Id}",
             Text = "X",
             AutoSize = true,
             Margin = new Padding(5),
@@ -252,7 +252,7 @@ public partial class Form1 : Form
         };
         removeButton.Click += (s, e) =>
         {
-            var click = CLICKS.Find(c => c.ID == clk.ID);
+            var click = CLICKS.Find(c => c.Id == clk.Id);
             CLICKS.Remove(click!);
             removeClickFromPanel(click!);
         };
@@ -260,7 +260,7 @@ public partial class Form1 : Form
     }
     void removeClickFromPanel(Click clk)
     {
-        var controls = panel1.Controls.OfType<Control>().Where(x => x.Name.Contains(clk.ID.ToString())).ToList();
+        var controls = panel1.Controls.OfType<Control>().Where(x => x.Name.Contains(clk.Id.ToString())).ToList();
 
         foreach (Control item in controls)
         {
@@ -280,11 +280,11 @@ public partial class Form1 : Form
     {
         if (btStartStop.Text == "Start All")
         {
-            CLICKS.ForEach(c => c.isRunning = true);
+            CLICKS.ForEach(c => c.IsRunning = true);
         }
         else
         {
-            CLICKS.ForEach(c => c.isRunning = false);
+            CLICKS.ForEach(c => c.IsRunning = false);
         }
 
 
